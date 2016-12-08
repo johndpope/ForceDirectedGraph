@@ -11,7 +11,7 @@ import SpriteKit
 final public class GraphScene {
     
     public init(view: UIView) {
-        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
 /*
         if let forceDirectedGraphScene = ForceDirectedGraphScene(fileNamed: "GraphScene") {
             let skView = view as! SKView
@@ -32,7 +32,6 @@ final public class GraphScene {
   */
         
         let forceDirectedGraphScene = ForceDirectedGraphScene(size: view.frame.size)
-        forceDirectedGraphScene
         let skView = view as! SKView
         skView.showsFPS = true
         skView.showsNodeCount = true
@@ -41,7 +40,7 @@ final public class GraphScene {
         skView.ignoresSiblingOrder = true
         
         /* Set the scale mode to scale to fit the window */
-        forceDirectedGraphScene.scaleMode = .AspectFill
+        forceDirectedGraphScene.scaleMode = .aspectFill
         
         skView.presentScene(forceDirectedGraphScene)
 

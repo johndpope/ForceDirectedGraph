@@ -21,7 +21,7 @@ struct JointInfo {
 
 struct NodeColor {
     static let Line   = UIColor(colorLiteralRed: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
-    static let Edge   = UIColor.whiteColor()
+    static let Edge   = UIColor.white
     static let Group1 = UIColor(colorLiteralRed: 228.0/255.0, green: 49.0/255.0,  blue: 45.0/255.0,  alpha: 1.0)
     static let Group2 = UIColor(colorLiteralRed: 1.0,         green: 128.0/255.0, blue: 36.0/255.0,  alpha: 1.0)
     static let Group3 = UIColor(colorLiteralRed: 1.0,         green: 186.0/255.0, blue: 123.0/255.0, alpha: 1.0)
@@ -32,33 +32,33 @@ struct NodeColor {
     static let Group8 = UIColor(colorLiteralRed: 152.0/255.0, green: 104.0/255.0, blue: 185.0/255.0, alpha: 1.0)
     static let Group9 = UIColor(colorLiteralRed: 198.0/255.0, green: 175.0/255.0, blue: 211.0/255.0, alpha: 1.0)
     
-    static func getNodeColor(group: GroupType) -> UIColor {
+    static func getNodeColor(_ group: GroupType) -> UIColor {
         switch group {
-        case .Accounting:
+        case .accounting:
             return NodeColor.Group1
             
-        case .Business:
+        case .business:
             return NodeColor.Group2
             
-        case .Design:
+        case .design:
             return NodeColor.Group3
             
-        case .Development:
+        case .development:
             return NodeColor.Group4
             
-        case .Finance:
+        case .finance:
             return NodeColor.Group5
             
-        case .HumanResources:
+        case .humanResources:
             return NodeColor.Group6
             
-        case .Marketing:
+        case .marketing:
             return NodeColor.Group7
             
-        case .Planning:
+        case .planning:
             return NodeColor.Group8
             
-        case .QualityAssurance:
+        case .qualityAssurance:
             return NodeColor.Group9
             
         default:
@@ -75,35 +75,35 @@ struct NodeInfo {
 
 // MARK: - Enum
 enum PhysicsCategoryType: UInt32 {
-    case None       = 0
-    case Circle     = 2
-    case Line       = 4
+    case none       = 0
+    case circle     = 2
+    case line       = 4
 }
 
 
 final public class ForceDirectedGraphScene: SKScene {
     
     // DataManager
-    private let forceDirectedGraphDataManager = ForceDirectedGraphDataManager()
+    fileprivate let forceDirectedGraphDataManager = ForceDirectedGraphDataManager()
     
     // MARK: - Value
     // MARK: - Private
-    private let radius: CGFloat             = 10.0
-    private let centerCircleRadius :CGFloat = 26.0
+    fileprivate let radius: CGFloat             = 10.0
+    fileprivate let centerCircleRadius :CGFloat = 26.0
     
-    private var jointInfoArray = [JointInfo]()
-    private var selectedNode: SKNode?
-    private var touchedLocation = CGPoint(x: 0 ,y: 0)
+    fileprivate var jointInfoArray = [JointInfo]()
+    fileprivate var selectedNode: SKNode?
+    fileprivate var touchedLocation = CGPoint(x: 0 ,y: 0)
     
-    private let cameraNode = SKCameraNode()
-    private let pinchGestureRecognizer = UIPinchGestureRecognizer()
-    private let panGestureRecognizer   = UIPanGestureRecognizer()
+    fileprivate let cameraNode = SKCameraNode()
+    fileprivate let pinchGestureRecognizer = UIPinchGestureRecognizer()
+    fileprivate let panGestureRecognizer   = UIPanGestureRecognizer()
     
     
     // MARK: - Function
     // MARK: - Private 
-    private func selectNodeForTouch(touchLocation: CGPoint) {
-        let touchedNode = self.nodeAtPoint(touchLocation)
+    fileprivate func selectNodeForTouch(_ touchLocation: CGPoint) {
+        let touchedNode = self.atPoint(touchLocation)
         
         if selectedNode != touchedNode {
             selectedNode?.removeAllActions()
@@ -112,33 +112,33 @@ final public class ForceDirectedGraphScene: SKScene {
     }
   
     
-    private func panForTranslation(translation: CGPoint) {
+    fileprivate func panForTranslation(_ translation: CGPoint) {
         guard let position = selectedNode?.position else {
             return
         }
         
-        selectedNode?.position = CGPointMake(position.x + translation.x, position.y + translation.y)
+        selectedNode?.position = CGPoint(x: position.x + translation.x, y: position.y + translation.y)
     }
 
     
     
-    override public func didMoveToView(view: SKView) {
+    override public func didMove(to view: SKView) {
         /* Setup your scene here */
 
-        self.scene?.backgroundColor = UIColor.whiteColor()
-        self.physicsWorld.gravity = CGVectorMake(0, 0)
-        let physicsBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
+        self.scene?.backgroundColor = UIColor.white
+        self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+        let physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         self.physicsBody = physicsBody
         
         let ratio:CGFloat = 3.0
-        self.size = CGSizeMake(UIScreen.mainScreen().bounds.size.width * ratio, UIScreen.mainScreen().bounds.size.height * ratio)
+        self.size = CGSize(width: UIScreen.main.bounds.size.width * ratio, height: UIScreen.main.bounds.size.height * ratio)
         
         self.addChild(cameraNode)
         self.camera = cameraNode
         
         // Node
         if setNodeList() == false {
-            print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set nodeList.")
+            print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set nodeList.")
         }
         
         // Gesture
@@ -149,46 +149,46 @@ final public class ForceDirectedGraphScene: SKScene {
     
     override public func didSimulatePhysics() {
         super.didSimulatePhysics()
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         centerOnNode(cameraNode)
     }
     
-    override public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         /* Called when a touch begins */
         for touch in touches {
-            touchedLocation = touch.locationInNode(self)
-            guard let shapeNode = self.nodeAtPoint(touchedLocation) as? SKShapeNode else {
+            touchedLocation = touch.location(in: self)
+            guard let shapeNode = self.atPoint(touchedLocation) as? SKShapeNode else {
                 continue
             }
             
-            if shapeNode.physicsBody?.categoryBitMask == PhysicsCategoryType.Circle.rawValue {
-                selectedNode = self.nodeAtPoint(touchedLocation)
-                print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] position : \(selectedNode?.position)")
+            if shapeNode.physicsBody?.categoryBitMask == PhysicsCategoryType.circle.rawValue {
+                selectedNode = self.atPoint(touchedLocation)
+                print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] position : \(selectedNode?.position)")
             }
         }
     }
     
-    override public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
-            let location = touch.locationInNode(self)
+            let location = touch.location(in: self)
             
             if selectedNode != nil {
                 selectedNode!.position = location
             } else if (touches.count == 1) {
-                cameraNode.runAction(SKAction.moveBy(CGVector(dx: (touchedLocation.x - location.x)/2.0, dy: (touchedLocation.y - location.y)/2.0), duration: 0.0))
+                cameraNode.run(SKAction.move(by: CGVector(dx: (touchedLocation.x - location.x)/2.0, dy: (touchedLocation.y - location.y)/2.0), duration: 0.0))
             }
         }
     }
     
-    override public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         selectedNode = nil
     }
 
 
    
-    override public func update(currentTime: CFTimeInterval) {
+    override public func update(_ currentTime: TimeInterval) {
         /* Called before each frame is rendered */
         
         for jointInfo in self.jointInfoArray {
@@ -203,17 +203,19 @@ final public class ForceDirectedGraphScene: SKScene {
                 continue
             }
             
-            let pathToDraw = CGPathCreateMutable()
-            CGPathMoveToPoint(pathToDraw, nil, bodyANode.position.x, bodyANode.position.y)
-            CGPathAddLineToPoint(pathToDraw, nil, bodyBNode.position.x, bodyBNode.position.y)
-            CGPathCloseSubpath(pathToDraw)
+            let pathToDraw = CGMutablePath()
+            let ptA = CGPoint(x: bodyANode.position.x, y: bodyANode.position.y)
+            let ptB = CGPoint(x: bodyBNode.position.x, y: bodyBNode.position.y)
+            pathToDraw.move(to: ptA )
+            pathToDraw.addLine(to: ptB)
+            pathToDraw.closeSubpath()
             jointInfo.line.path = pathToDraw
         }
     }
     
     
-    private func setNodeList() -> Bool {
-        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func setNodeList() -> Bool {
+        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
 
         // Add nodes
         for vertex in forceDirectedGraphDataManager.canvas {
@@ -229,18 +231,18 @@ final public class ForceDirectedGraphScene: SKScene {
         return true
     }
     
-    private func createNode(vertex: Vertex) -> SKShapeNode {
+    fileprivate func createNode(_ vertex: Vertex) -> SKShapeNode {
         
         let circleNode                          = SKShapeNode(circleOfRadius: radius)
         circleNode.position                     = vertex.point
         circleNode.lineWidth                    = 2.0
         circleNode.physicsBody                  = SKPhysicsBody(circleOfRadius: radius)
-        circleNode.physicsBody?.dynamic         = true
+        circleNode.physicsBody?.isDynamic         = true
         circleNode.physicsBody?.friction        = 0.1
         circleNode.physicsBody?.restitution     = 0.98
         circleNode.physicsBody?.mass            = 10.5
         circleNode.physicsBody?.allowsRotation  = true
-        circleNode.physicsBody?.categoryBitMask = PhysicsCategoryType.Circle.rawValue
+        circleNode.physicsBody?.categoryBitMask = PhysicsCategoryType.circle.rawValue
         circleNode.strokeColor                  = NodeColor.Edge
         circleNode.fillColor                    = NodeColor.getNodeColor(vertex.group)
         
@@ -248,14 +250,18 @@ final public class ForceDirectedGraphScene: SKScene {
         return circleNode
     }
     
-    private func setLink(vertex: Vertex) -> Bool {
+    fileprivate func setLink(_ vertex: Vertex) -> Bool {
         
         for edge in vertex.neighbors {
             // Line
-            let pathToDraw = CGPathCreateMutable()
-            CGPathMoveToPoint(pathToDraw, nil, edge.neighbor.point.x, edge.neighbor.point.y)
-            CGPathAddLineToPoint(pathToDraw, nil, vertex.point.x, vertex.point.y)
-            CGPathCloseSubpath(pathToDraw)
+            let pathToDraw = CGMutablePath()
+            let ptEdge = CGPoint(x: edge.neighbor.point.x, y: edge.neighbor.point.y)
+            pathToDraw.move(to: ptEdge )
+
+            let ptVertex = CGPoint(x: vertex.point.x, y: vertex.point.y)
+            pathToDraw.addLine(to: ptVertex )
+
+            pathToDraw.closeSubpath()
             
             let line         = SKShapeNode(path: pathToDraw)
             line.strokeColor = NodeColor.Line
@@ -264,15 +270,15 @@ final public class ForceDirectedGraphScene: SKScene {
             self.addChild(line)
             
             guard let vertexNode = vertex.node, let neighborNode = edge.neighbor.node else {
-                print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set link.")
+                print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set link.")
                 continue
             }
             
-            let spring = SKPhysicsJointSpring.jointWithBodyA(vertexNode.physicsBody!, bodyB: neighborNode.physicsBody!, anchorA: vertexNode.position, anchorB: neighborNode.position)
+            let spring = SKPhysicsJointSpring.joint(withBodyA: vertexNode.physicsBody!, bodyB: neighborNode.physicsBody!, anchorA: vertexNode.position, anchorB: neighborNode.position)
             spring.damping   = 0.1
             spring.frequency = 0.8
             
-            self.scene?.physicsWorld.addJoint(spring)
+            self.scene?.physicsWorld.add(spring)
             self.jointInfoArray.append(JointInfo(joint: spring, line: line))
 
         }
@@ -280,15 +286,15 @@ final public class ForceDirectedGraphScene: SKScene {
         return true
     }
     
-    private func centerOnNode(node: SKNode) -> Bool {
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func centerOnNode(_ node: SKNode) -> Bool {
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         guard let nodeScene = node.scene, let parentNode = node.parent else {
-            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set the node position.")
+            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set the node position.")
             return false
         }
         
-        let positionInScene = nodeScene.convertPoint(node.position, fromNode: parentNode)
-        parentNode.position = CGPointMake(parentNode.position.x - positionInScene.x, parentNode.position.y - positionInScene.y)
+        let positionInScene = nodeScene.convert(node.position, from: parentNode)
+        parentNode.position = CGPoint(x: parentNode.position.x - positionInScene.x, y: parentNode.position.y - positionInScene.y)
         
         return true
     }
@@ -302,14 +308,14 @@ extension CGVector {
 }
 
 extension CGPoint {
-    func mult(value: CGFloat) -> CGPoint {
-        return CGPointMake(self.x * value, self.y * value)
+    func mult(_ value: CGFloat) -> CGPoint {
+        return CGPoint(x: self.x * value, y: self.y * value)
     }
 }
 
 extension ForceDirectedGraphScene: UIGestureRecognizerDelegate {
-    func pinchGestureRecognizerAction(recognizer: UIPinchGestureRecognizer) {
-        cameraNode.runAction(SKAction.scaleBy(1.0 - recognizer.velocity/10.0, duration: 0.1))
+    func pinchGestureRecognizerAction(_ recognizer: UIPinchGestureRecognizer) {
+        cameraNode.run(SKAction.scale(by: 1.0 - recognizer.velocity/10.0, duration: 0.1))
         
         centerOnNode(cameraNode)
     }

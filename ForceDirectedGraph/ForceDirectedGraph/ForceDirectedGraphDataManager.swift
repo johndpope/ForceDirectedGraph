@@ -49,7 +49,7 @@ final class Path {
     var previous: Path!
     
     init() {
-        self.destination = Vertex(name: "", group: .None, gender: .None)
+        self.destination = Vertex(name: "", group: .none, gender: .none)
     }
     
     init(destination: Vertex) {
@@ -66,27 +66,27 @@ struct KamadaKawaiInfo {
 
 // MARK: - Enum
 enum GroupType: Int {
-    case None = 0
-    case Development
-    case Marketing
-    case Business
-    case Accounting
-    case Planning
-    case Design
-    case QualityAssurance
-    case HumanResources
-    case Finance
-    case Team1
-    case Team2
-    case Team3
-    case Team4
-    case Team5
+    case none = 0
+    case development
+    case marketing
+    case business
+    case accounting
+    case planning
+    case design
+    case qualityAssurance
+    case humanResources
+    case finance
+    case team1
+    case team2
+    case team3
+    case team4
+    case team5
 }
 
 enum Gender {
-    case None
-    case Man
-    case Woman
+    case none
+    case man
+    case woman
 }
 
 
@@ -97,12 +97,12 @@ final class ForceDirectedGraphDataManager {
     
     // MARK: - Value
     // MARK: Private
-    private var isDirected = false
+    fileprivate var isDirected = false
     
-    private var shortestPathMatrix      = [[Float]]()
-    private var kMatrix                 = [[Float]]()
-    private var lMatrix                 = [[Float]]()
-    private var springConstant: Float  = 1
+    fileprivate var shortestPathMatrix      = [[Float]]()
+    fileprivate var kMatrix                 = [[Float]]()
+    fileprivate var lMatrix                 = [[Float]]()
+    fileprivate var springConstant: Float  = 1
     
     
     // MARK: Public
@@ -111,30 +111,30 @@ final class ForceDirectedGraphDataManager {
     // MARK: - Function
     // MARK: - Init
     init() {
-        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
 
         if setKawadaKawaiGraph() == false {
-            print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set kawadaKawai graph.")
+            print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set kawadaKawai graph.")
         }
     }
     
     // MARK: Private
-    private func setGraphData() -> Bool {
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func setGraphData() -> Bool {
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         
-        guard let filePath = NSBundle.mainBundle().pathForResource("nodeInfoListTest", ofType: "json") else {
+        guard let filePath = Bundle.main.path(forResource: "nodeInfoListTest", ofType: "json") else {
             print("Error: Failed to get the filePath.")
             return false
         }
         
-        guard let data = try? NSData(contentsOfFile: filePath, options:.DataReadingMappedIfSafe) else {
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath), options:.mappedIfSafe) else {
             print("Error: Failed to get a data")
             return false
         }
         
         
         do {
-            guard let deserializedData = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String:AnyObject] else {
+            guard let deserializedData = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:AnyObject] else {
                 print("Error: Failed to convert data to dictionary.")
                 return false
             }
@@ -169,7 +169,7 @@ final class ForceDirectedGraphDataManager {
                 }
 
                 // Add vertex
-                let vertex = Vertex(name: name, group: groupType, gender: .None)
+                let vertex = Vertex(name: name, group: groupType, gender: .none)
                 vertex.point = randomPosition(getSectionCenter(groupType.rawValue), radius: 150)
                 canvas.append(vertex)
                 
@@ -196,12 +196,12 @@ final class ForceDirectedGraphDataManager {
                 }
                 
                 if canvas.count <= source || canvas.count <= target {
-                    print("DAILYHOTEL [\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to add the edge. CanvasCount: \(canvas.count), source: \(source), target: \(target)")
+                    print("DAILYHOTEL [\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to add the edge. CanvasCount: \(canvas.count), source: \(source), target: \(target)")
                     continue
                 }
                 
                 if addEdge(canvas[source], neighbor: canvas[target], weight: value) == false {
-                    print("DAILYHOTEL [\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to add the edge.")
+                    print("DAILYHOTEL [\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to add the edge.")
                 }
             }
             
@@ -212,7 +212,7 @@ final class ForceDirectedGraphDataManager {
         return true
     }
     
-    private func addEdge(source: Vertex, neighbor: Vertex, weight: Int) -> Bool {
+    fileprivate func addEdge(_ source: Vertex, neighbor: Vertex, weight: Int) -> Bool {
         // Create a new edge
         let newEdge = Edge(neighbor: neighbor, weight: weight, visited: false)
 
@@ -231,16 +231,16 @@ final class ForceDirectedGraphDataManager {
         return true
     }
     
-    private func randomPosition(center: CGPoint, radius: Float) -> CGPoint {
+    fileprivate func randomPosition(_ center: CGPoint, radius: Float) -> CGPoint {
         let theta = Float(arc4random_uniform(UInt32.max)) / Float(UInt32.max) * Float(M_PI_2)
         let x = radius * cosf(theta)
         let y = radius * sinf(theta)
-        return CGPointMake(center.x + CGFloat(x), center.y + CGFloat(y))
+        return CGPoint(x: center.x + CGFloat(x), y: center.y + CGFloat(y))
     }
     
-    private func getSectionCenter(sectionNumber: Int) -> CGPoint {
+    fileprivate func getSectionCenter(_ sectionNumber: Int) -> CGPoint {
         
-        let sideLength = min(UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height)
+        let sideLength = min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         
         let horizontalCountMax = 2
         let divideNum: CGFloat = 5
@@ -256,12 +256,12 @@ final class ForceDirectedGraphDataManager {
             centerY += sideLength * (CGFloat(sectionNumber / horizontalCountMax)) + sideLength/divideNum
         }
         
-        return CGPointMake(centerX, centerY)
+        return CGPoint(x: centerX, y: centerY)
     }
     
     
     /// Undirected Dijkstra's algorithm
-    private func shortestPath(source: Vertex, destination: Vertex) -> Path? {
+    fileprivate func shortestPath(_ source: Vertex, destination: Vertex) -> Path? {
         var frontier   = [Path]()
         var finalPaths = [Path]()
         
@@ -318,7 +318,7 @@ final class ForceDirectedGraphDataManager {
             finalPaths.append(shortestPath)
             
             // Remove the bestPath from the frontier
-            frontier.removeAtIndex(pathIndex)
+            frontier.remove(at: pathIndex)
         }
         
         for path in finalPaths {
@@ -335,7 +335,7 @@ final class ForceDirectedGraphDataManager {
         return shortestPath
     }
     
-    private func farthestPath(source: Vertex, destination: Vertex) -> Path? {
+    fileprivate func farthestPath(_ source: Vertex, destination: Vertex) -> Path? {
         var frontier   = [Path]()
         var finalPaths = [Path]()
         
@@ -392,7 +392,7 @@ final class ForceDirectedGraphDataManager {
             finalPaths.append(farthestPath)
             
             // Remove the bestPath from the frontier
-            frontier.removeAtIndex(pathIndex)
+            frontier.remove(at: pathIndex)
         }
         
         for path in finalPaths {
@@ -411,11 +411,11 @@ final class ForceDirectedGraphDataManager {
     }
     
     /// Set shortest path matrixt (d matrix)
-    private func setShortestPathMatrix() -> Bool {
-        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func setShortestPathMatrix() -> Bool {
+        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         
         // Initialize
-        shortestPathMatrix = Array(count: canvas.count, repeatedValue: Array(count: canvas.count, repeatedValue: 0))
+        shortestPathMatrix = Array(repeating: Array(repeating: 0, count: canvas.count), count: canvas.count)
         
         for i in 0..<canvas.count {
             for j in i..<canvas.count {
@@ -435,14 +435,14 @@ final class ForceDirectedGraphDataManager {
     }
     
     /// Set L(ideal lenght) Matrix
-    private func setLMatrix() -> Bool {
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func setLMatrix() -> Bool {
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         
         // Initialize
-        lMatrix =  Array(count: canvas.count, repeatedValue: Array(count: canvas.count, repeatedValue: 0))
+        lMatrix =  Array(repeating: Array(repeating: 0, count: canvas.count), count: canvas.count)
         
         // Set L metrix
-        let L0 = UIScreen.mainScreen().bounds.width > UIScreen.mainScreen().bounds.height ? Float(UIScreen.mainScreen().bounds.width) : Float(UIScreen.mainScreen().bounds.height)
+        let L0 = UIScreen.main.bounds.width > UIScreen.main.bounds.height ? Float(UIScreen.main.bounds.width) : Float(UIScreen.main.bounds.height)
         var L: Float = 0
         for i in 0..<canvas.count {
             for j in i..<canvas.count {
@@ -468,14 +468,14 @@ final class ForceDirectedGraphDataManager {
     }
     
     /// Set K (constant) Matrixt
-    private func setKMatrix() -> Bool {
-        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func setKMatrix() -> Bool {
+        print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
         
         // Initialize
-        kMatrix = Array(count: canvas.count, repeatedValue: Array(count: canvas.count, repeatedValue: Float(0)))
+        kMatrix = Array(repeating: Array(repeating: Float(0), count: canvas.count), count: canvas.count)
         
         if shortestPathMatrix.count < canvas.count {
-            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set kMatrix.")
+            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set kMatrix.")
             return false
         }
         
@@ -493,7 +493,7 @@ final class ForceDirectedGraphDataManager {
     }
     
     /// Energy
-    private func getEnergy() -> Float {
+    fileprivate func getEnergy() -> Float {
         var energy: Float = 0
         var dx: Float     = 0
         var dy: Float     = 0
@@ -516,7 +516,7 @@ final class ForceDirectedGraphDataManager {
     }
     
     /// DeltaM
-    private func getDeltaM(i: Int) -> Float {
+    fileprivate func getDeltaM(_ i: Int) -> Float {
         var dx: Float          = 0
         var dy: Float          = 0
        
@@ -545,7 +545,7 @@ final class ForceDirectedGraphDataManager {
     }
     
     /// the bulk of the KK inner loop, estimates location of local minima
-    private func getDeltas(i: Int) -> CGPoint {
+    fileprivate func getDeltas(_ i: Int) -> CGPoint {
         // Solve deltaM partial eqns to figure out new position for node of index i where  delataM is close to 0 or less then epsilon
         var dx: Float     = 0
         var dy: Float     = 0
@@ -599,26 +599,26 @@ final class ForceDirectedGraphDataManager {
         return CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
     
-    private func setKawadaKawaiGraph() -> Bool {
-        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)]")
+    fileprivate func setKawadaKawaiGraph() -> Bool {
+        print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)]")
 
         if setGraphData() == false {
-            print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set NodeInfo.")
+            print("[\((NSString(string: "\(#file))").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set NodeInfo.")
             return false
         }
         
         if setShortestPathMatrix() == false {
-            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set shortestPathWeight Matrix.")
+            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set shortestPathWeight Matrix.")
             return false
         }
         
         if setLMatrix() == false {
-            print("DAILYHOTEL [\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set L(ideal length) Matrix.")
+            print("DAILYHOTEL [\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set L(ideal length) Matrix.")
             return false
         }
         
         if setKMatrix() == false {
-            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).stringByDeletingPathExtension) \(#function)] Error: Failed to set kMatrix.")
+            print("[\((NSString(string: "\(#file)").lastPathComponent as NSString).deletingPathExtension) \(#function)] Error: Failed to set kMatrix.")
             return false
         }
         
